@@ -1,0 +1,15 @@
+name: Test workflow
+
+on:
+  repository_dispatch:
+    types: heroku-webhook-trigger
+    
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Run with input
+    steps:
+      - name: Output stuff
+        run: "echo \"${{ github.event.client_payload }}\""
+
+
