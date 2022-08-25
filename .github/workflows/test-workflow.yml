@@ -2,7 +2,7 @@ name: Test workflow
 
 on:
   repository_dispatch:
-    types: heroku-webhook-trigger
+    types: heroku-webhook-repository-trigger, heroku-webhook-fg-sharex-nonprod-ogg-trigger
     
 jobs:
   test:
@@ -10,6 +10,6 @@ jobs:
     name: Run with input
     steps:
       - name: Output stuff
-        run: "echo \"${{ JSON.stringify(github.event.client_payload) }}\""
+        run: "echo \"${{ github.event.event_type }}\""
 
 
