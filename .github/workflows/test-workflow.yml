@@ -10,6 +10,6 @@ jobs:
     name: Run with input
     steps:
       - name: Output stuff
-        run: "echo \"${{ github.event.client_payload.some }}\""
+        run: "echo \"${{ JSON.stringify(github.event.client_payload) }}\""
 
 
