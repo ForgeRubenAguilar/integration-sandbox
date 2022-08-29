@@ -3,8 +3,9 @@ name: Test workflow
 on:
   repository_dispatch:
     types: 
-    - heroku-webhook-repository-trigger
-    - heroku-webhook-fg-sharex-nonprod-ogg-trigger
+    - not-real
+    # - heroku-webhook-repository-trigger-release
+    # - heroku-webhook-fg-sharex-nonprod-ogg-trigger-release
     
 jobs:
   test:

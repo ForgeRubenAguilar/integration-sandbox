@@ -1,0 +1,44 @@
+# Workflow for https://github.com/forgeglobal/shagorex/github_actions/ensure-ticket-status
+# Sample taken from: https://github.com/forgeglobal/shagorex/github_actions/ensure-ticket-status/blob/master/ensure-ticket-status.yml
+
+name: Remove Heroku Feature Flags 
+
+on:
+  repository_dispatch:
+    types: 
+    - heroku-webhook-repository-trigger-release
+
+jobs:  
+  build:
+    runs-on: ubuntu-latest
+    name: Check and rerelease without forbidden Heroku feature flags
+    steps:
+      - uses: actions/checkout@v2
+      - name: Perform check and Heroku rerelease
+        uses: ./github_actions/ensure-new-feature-flags-are-done-in-launch-darkly # Relative to root of github repo.
+        
+        env: # The following are example values. Make sure to fill in with what you need.
+          HEROKU_API_KEY: ${{ secrets.NONPROD_HEROKU_API_KEY }}
+          HEROKU_APP_ID: ${{ github.event.client_payload.heroku_webhook.data.app.id }}
+          HEROKU_RELEASE_ID: ${{ github.event.client_payload.heroku_webhook.data.id }}
+          HEROKU_RELEASE_VERSION: ${{ github.event.client_payload.heroku_webhook.data.version }}
+          FEATURE_FLAG_WHITELIST: | 
+            [
+
+            ]
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,ref,workflow,job
+          # Based on custom with fields feature: https://action-slack.netlify.app/usecase/02-custom
+          custom_payload: |
+            {
+              attachments: [{
+                color: 'warning',
+                text: `${process.env.AS_WORKFLOW}\n${process.env.AS_JOB} (${process.env.AS_COMMIT}) of ${process.env.AS_REPO}@${process.env.AS_REF} by ${process.env.AS_AUTHOR} ${{ job.status }} in ${process.env.AS_TOOK}`,
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: ${{ failure() }}
+          

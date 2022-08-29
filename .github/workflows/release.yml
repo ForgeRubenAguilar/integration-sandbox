@@ -1,0 +1,96 @@
+# Workflow for https://github.com/forgeglobal/shagorex/github_actions/ensure-ticket-status
+# Sample taken from: https://github.com/forgeglobal/shagorex/github_actions/ensure-ticket-status/blob/master/ensure-ticket-status.yml
+
+name: Remove Heroku Feature Flags 
+
+on:
+  repository_dispatch:
+    types: 
+    - heroku-webhook-repository-trigger-release
+
+jobs:  
+  build:
+    runs-on: ubuntu-latest
+    name: Check and rerelease without forbidden Heroku feature flags
+    steps:
+      - uses: actions/checkout@v2
+      - name: Perform check and Heroku rerelease
+        uses: ./github_actions/ensure-new-feature-flags-are-done-in-launch-darkly # Relative to root of github repo.
+        
+        env: # The following are example values. Make sure to fill in with what you need.
+          HEROKU_API_KEY: ${{ secrets.NONPROD_HEROKU_API_KEY }}
+          HEROKU_APP_ID: ${{ github.event.client_payload.heroku_webhook.data.app.id }}
+          HEROKU_RELEASE_ID: ${{ github.event.client_payload.heroku_webhook.data.id }}
+          HEROKU_RELEASE_VERSION: ${{ github.event.client_payload.heroku_webhook.data.version }}
+          FEATURE_FLAG_WHITELIST: | 
+            [
+              "FEATURE_AGORA",
+              "FEATURE_AUTO_ACCREDITATION",
+              "FEATURE_BORROW_AGAINST_SHARES",
+              "FEATURE_BROKER_REASSIGNMENT",
+              "FEATURE_COMPANY_PAGE",
+              "FEATURE_CONFIDENTIAL_CLIENT",
+              "FEATURE_DWOLLA",
+              "FEATURE_FCS_ALLOW_TRADE_OUTSIDE_PROGRAM_DATES",
+              "FEATURE_FCS_HARDCODE_PREFERRED_SERIES_SHAR_1171",
+              "FEATURE_FORCE_IOI_REVIEW_FEATURE",
+              "FEATURE_FORGE_THEME_ENABLED",
+              "FEATURE_FORGET_USER_UI",
+              "FEATURE_GENERAL_INTEREST_CREATION",
+              "FEATURE_GLOBAL_VWAP_ENABLED",
+              "FEATURE_HEADER_REACT_MARKET_TAB",
+              "FEATURE_HEADER_REACT_SEARCH_BAR",
+              "FEATURE_HEADER_REACT_WRAPPER",
+              "FEATURE_HELLOSIGN_GET_FILES",
+              "FEATURE_ICMS_FORGE_X_ADMIN_UI_ENABLED",
+              "FEATURE_ICO",
+              "FEATURE_IN_PROGRESS_DEALS",
+              "FEATURE_IN_PROGRESS_TRADE_COMPONENT",
+              "FEATURE_IOI_REVIEW",
+              "FEATURE_IOI_ROLLUP",
+              "FEATURE_LOGIN_ENABLE_RECAPTCHA",
+              "FEATURE_MARKETPLACE",
+              "FEATURE_MIGRATE_ACCOUNT_WITH_SNAPSHOT",
+              "FEATURE_NEW_GLOBAL_NAV_COLOR",
+              "FEATURE_NON_SOLICIT",
+              "FEATURE_OFFERINGS",
+              "FEATURE_OKTA_AS_AUTH_PROVIDER_ENABLED",
+              "FEATURE_OPS_MISSION_CONTROL",
+              "FEATURE_OTC",
+              "FEATURE_PBA_DEPOSIT_CASH",
+              "FEATURE_PBA_SIGNUP",
+              "FEATURE_PDT_ADD_BUYER",
+              "FEATURE_PDT_DASHBOARD",
+              "FEATURE_PENDING_TRANSACTIONS",
+              "FEATURE_PERFORMING_IDENTITY_MIGRATION",
+              "FEATURE_PROMPT_FOR_KYC",
+              "FEATURE_PROPOSED_DEALS",
+              "FEATURE_PROPOSED_DEALS_REACT",
+              "FEATURE_REMOVE_USER_FROM_ACCOUNT_ENABLED",
+              "FEATURE_RENEW_IOI",
+              "FEATURE_REPLACE_SIGNABLE_DOCUMENT",
+              "FEATURE_SPLIT_BUTTON",
+              "FEATURE_UNIFIED_ISQS",
+              "FEATURE_UP_TO_AGREEMENTS",
+              "FEATURE_USE_IDENTITY_FOR_SORCERY",
+              "FEATURE_USER_AGGREGATE_ENABLED",
+              "REACT_APP_FEATURE_CC_EMAILS",
+              "REACT_APP_FEATURE_MARKETPLACE",
+              "REACT_APP_FEATURE_OTC"
+            ]
+      # - uses: 8398a7/action-slack@v3
+      #   with:
+      #     status: ${{ job.status }}
+      #     fields: repo,message,commit,author,ref,workflow,job
+      #     # Based on custom with fields feature: https://action-slack.netlify.app/usecase/02-custom
+      #     custom_payload: |
+      #       {
+      #         attachments: [{
+      #           color: 'warning',
+      #           text: `${process.env.AS_WORKFLOW}\n${process.env.AS_JOB} (${process.env.AS_COMMIT}) of ${process.env.AS_REPO}@${process.env.AS_REF} by ${process.env.AS_AUTHOR} ${{ job.status }} in ${process.env.AS_TOOK}`,
+      #         }]
+      #       }
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #   if: ${{ failure() }}
+          
