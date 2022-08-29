@@ -44,7 +44,7 @@ config_vars_without_non_whitelisted_flags = release_config_vars.map { |config_ke
   else
     [config_key, config_value]
   end
-}
+}.to_h
 
 heroku_client.config_var.update(heroku_app_id, body = config_vars_without_non_whitelisted_flags)
 

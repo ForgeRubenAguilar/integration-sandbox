@@ -79,15 +79,13 @@ jobs:
               "FEATURE_UNIFIED_ISQS",
               "FEATURE_UP_TO_AGREEMENTS",
               "FEATURE_USE_IDENTITY_FOR_SORCERY",
-              "FEATURE_USER_AGGREGATE_ENABLED",
-              "REACT_APP_FEATURE_CC_EMAILS",
-              "REACT_APP_FEATURE_MARKETPLACE",
-              "REACT_APP_FEATURE_OTC"
+              "FEATURE_USER_AGGREGATE_ENABLED"
             ]
       # - uses: 8398a7/action-slack@v3
       #   with:
       #     status: ${{ job.status }}
       #     fields: repo,message,commit,author,ref,workflow,job
+      #     # https://github.com/<username>/<repo_name>/actions/runs/${{ github.run_id }}
       #     # Based on custom with fields feature: https://action-slack.netlify.app/usecase/02-custom
       #     custom_payload: |
       #       {
