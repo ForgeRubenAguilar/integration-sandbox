@@ -1,7 +1,5 @@
 require 'json'
 
-require_relative 'heroku/app-info-client.rb'
-
 # grab all FEATURE_* env vars from release for heroku app
 # filter out whitelisted flags
 # if any remain, update config with null to remove them in a new release
