@@ -1,4 +1,5 @@
 require 'json'
+require 'platform-api'
 
 # grab all FEATURE_* env vars from release for heroku app
 # filter out whitelisted flags
