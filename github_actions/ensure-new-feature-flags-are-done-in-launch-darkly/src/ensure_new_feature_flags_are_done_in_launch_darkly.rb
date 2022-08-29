@@ -17,10 +17,10 @@ heroku_release_id = ENV.fetch("HEROKU_RELEASE_ID")
 heroku_release_version = ENV.fetch("HEROKU_RELEASE_VERSION")
 heroku_client = PlatformAPI.connect_oauth(ENV.fetch("HEROKU_API_KEY"))
 
-latest_release=heroku_client.release.list(heroku_app_id)
+maybe_latest_release=heroku_client.release.info(heroku_app_id, heroku_release_version)
 # A release is generated for each item invoked in procfile, so it can get spammy.
-# We only care to guard the latest release.
-exit 0 if latest_release.version != heroku_release_version
+# We only care to guard the latest release, so ensure this is still the latest.
+exit 0 if maybe_latest_release["current"] != true
 
 release_config_vars=heroku_client.config_var.info_for_app_release(heroku_app_id, heroku_release_id)
 
