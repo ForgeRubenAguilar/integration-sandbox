@@ -13,8 +13,6 @@ require 'colorize'
 
 # --- main ---
 
-exit 1
-
 heroku_app_id = ENV.fetch("HEROKU_APP_ID")
 heroku_app_name = ENV.fetch("HEROKU_APP_NAME")
 heroku_release_id = ENV.fetch("HEROKU_RELEASE_ID")

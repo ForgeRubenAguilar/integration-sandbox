@@ -85,13 +85,12 @@ jobs:
         with:
           status: custom
           fields: repo,message,commit,author,ref,workflow,job,github
-          # https://github.com/ForgeRubenAguilar/integration-sandbox/actions/runs/${{ github.run_id }}
           # Based on custom with fields feature: https://action-slack.netlify.app/usecase/02-custom
           custom_payload: |
             {
               attachments: [{
                 color: 'danger',
-                text: `${process.env.AS_WORKFLOW}\n${process.env.AS_JOB} ${{ job.status }} for ${{ github.event.client_payload.heroku_webhook.data.app.name }} link to https://github.com/ForgeRubenAguilar/integration-sandbox/actions/runs/${{ github.run_id }} https://media2.giphy.com/media/xT1R9IWTRv6Kn3FvoI/giphy.gif?cid=790b761113cd7ed302c13e7d2c0f87723c2d8bc11d75bcaf&rid=giphy.gif&ct=g `,
+                text: `Nonwhitelisted feature flags have been added to Heroku app ${{ github.event.client_payload.heroku_webhook.data.app.name }}. Use Launch Darkly for feature flags. See more details at ${process.env.AS_WORKFLOW}`,
               }]
             }
         env:
