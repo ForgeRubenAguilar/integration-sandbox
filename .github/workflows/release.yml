@@ -25,6 +25,7 @@ jobs:
         env: # The following are example values. Make sure to fill in with what you need.
           HEROKU_API_KEY: ${{ secrets.NONPROD_HEROKU_API_KEY }}
           HEROKU_APP_ID: ${{ github.event.client_payload.heroku_webhook.data.app.id }}
+          HEROKU_APP_NAME: ${{ github.event.client_payload.heroku_webhook.data.app.name }}
           HEROKU_RELEASE_ID: ${{ github.event.client_payload.heroku_webhook.data.id }}
           HEROKU_RELEASE_VERSION: ${{ github.event.client_payload.heroku_webhook.data.version }}
           FEATURE_FLAG_WHITELIST: | 

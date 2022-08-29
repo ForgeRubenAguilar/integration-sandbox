@@ -8,4 +8,5 @@ gem "dotenv"
 gem "platform-api"
 gem "json"
 gem "parallel"
+gem "colorize"
   
