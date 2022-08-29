@@ -83,7 +83,7 @@ jobs:
             ]
       - uses: 8398a7/action-slack@v3
         with:
-          status: ${{ job.status }}
+          status: custom
           fields: repo,message,commit,author,ref,workflow,job,github
           # https://github.com/ForgeRubenAguilar/integration-sandbox/actions/runs/${{ github.run_id }}
           # Based on custom with fields feature: https://action-slack.netlify.app/usecase/02-custom
