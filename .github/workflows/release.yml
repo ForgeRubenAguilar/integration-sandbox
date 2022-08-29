@@ -14,8 +14,13 @@ jobs:
     name: Check and rerelease without forbidden Heroku feature flags
     steps:
       - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          working-directory: github_actions/ensure-new-feature-flags-are-done-in-launch-darkly/src
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Perform check and Heroku rerelease
-        uses: ./github_actions/ensure-new-feature-flags-are-done-in-launch-darkly # Relative to root of github repo.
+       # Relative to root of github repo.
+        run: BUNDLE_GEMFILE=github_actions/ensure-new-feature-flags-are-done-in-launch-darkly/src/Gemfile bundle exec ruby github_actions/ensure-new-feature-flags-are-done-in-launch-darkly/src/ensure_new_feature_flags_are_done_in_launch_darkly.rb
         
         env: # The following are example values. Make sure to fill in with what you need.
           HEROKU_API_KEY: ${{ secrets.NONPROD_HEROKU_API_KEY }}
