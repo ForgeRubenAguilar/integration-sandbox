@@ -24,7 +24,7 @@ jobs:
        # Relative to root of github repo.
         run: BUNDLE_GEMFILE=github_actions/ensure-new-feature-flags-are-done-in-launch-darkly/src/Gemfile bundle exec ruby github_actions/ensure-new-feature-flags-are-done-in-launch-darkly/src/ensure_new_feature_flags_are_done_in_launch_darkly.rb
         # Update events come in after the create. This can get spammy for slack notifications, so only respond to release:create.
-        if: ${{ github.event.client_payload.heroku_webhook.data.action == 'create' }}
+        if: ${{ github.event.client_payload.heroku_webhook.action == 'create' }}
         env: # The following are example values. Make sure to fill in with what you need.
           HEROKU_API_KEY: ${{ secrets.NONPROD_HEROKU_API_KEY }}
           HEROKU_APP_ID: ${{ github.event.client_payload.heroku_webhook.data.app.id }}
