@@ -22,7 +22,7 @@ jobs:
        # Relative to root of github repo.
         run: BUNDLE_GEMFILE=github_actions/ensure-new-feature-flags-are-done-in-launch-darkly/src/Gemfile bundle exec ruby github_actions/ensure-new-feature-flags-are-done-in-launch-darkly/src/ensure_new_feature_flags_are_done_in_launch_darkly.rb
         # Some of the release events come in with not current data, this can get spammy for slack notifications.
-        if: ${{ github.event.client_payload.heroku_webhook.data.current }} == "true"
+        if: ${{ github.event.client_payload.heroku_webhook.data.current }} == true
         env: # The following are example values. Make sure to fill in with what you need.
           HEROKU_API_KEY: ${{ secrets.NONPROD_HEROKU_API_KEY }}
           HEROKU_APP_ID: ${{ github.event.client_payload.heroku_webhook.data.app.id }}
@@ -91,7 +91,7 @@ jobs:
             {
               attachments: [{
                 color: 'danger',
-                text: `<@channel> Nonwhitelisted feature flags have been added to Heroku app ${{ github.event.client_payload.heroku_webhook.data.app.name }}. Use Launch Darkly for feature flags. See more details on the failure <https://github.com/ForgeRubenAguilar/integration-sandbox/actions/runs/${{ github.run_id }}|here.>`,
+                text: `<!channel> Nonwhitelisted feature flags have been added to Heroku app ${{ github.event.client_payload.heroku_webhook.data.app.name }}. Use Launch Darkly for feature flags. See more details on the failure <https://github.com/ForgeRubenAguilar/integration-sandbox/actions/runs/${{ github.run_id }}|here.>`,
               }]
             }
         env:
