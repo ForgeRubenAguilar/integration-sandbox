@@ -19,14 +19,6 @@ heroku_release_id = ENV.fetch("HEROKU_RELEASE_ID")
 heroku_release_version = ENV.fetch("HEROKU_RELEASE_VERSION")
 heroku_client = PlatformAPI.connect_oauth(ENV.fetch("HEROKU_API_KEY"))
 
-maybe_latest_release=heroku_client.release.info(heroku_app_id, heroku_release_version)
-# A release is generated for each item invoked in procfile, so it can get spammy.
-# We only care to guard the latest release, so ensure this is still the latest.
-if maybe_latest_release["current"] != true
-  puts "Release #{heroku_release_version} in app #{heroku_app_name} is not current. Skipping check.".green
-  exit 0 
-end
-
 release_config_vars=heroku_client.config_var.info_for_app_release(heroku_app_id, heroku_release_id)
 
 feature_flag_whitelist = JSON.parse(ENV.fetch("FEATURE_FLAG_WHITELIST"))
@@ -45,6 +37,16 @@ config_vars_without_non_whitelisted_flags = release_config_vars.map { |config_ke
     [config_key, config_value]
   end
 }.to_h
+
+
+maybe_latest_release=heroku_client.release.info(heroku_app_id, heroku_release_version)
+# A release is generated for each item invoked in procfile, so it can get spammy.
+# We only care to guard the latest release, so ensure this is still the latest.
+# Check as close to update as possible so we can avoid spam.
+if maybe_latest_release["current"] != true
+  puts "Release #{heroku_release_version} in app #{heroku_app_name} is not current. Skipping check.".green
+  exit 0 
+end
 
 heroku_client.config_var.update(heroku_app_id, body = config_vars_without_non_whitelisted_flags)
 
