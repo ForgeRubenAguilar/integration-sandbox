@@ -2,22 +2,19 @@ require 'json'
 require 'platform-api'
 require 'colorize'
 
-# grab all FEATURE_* env vars from release for heroku app
-# filter out whitelisted flags
-# if any remain, update config with null to remove them in a new release
-# fail this job so slack alert is sent (verify it doesn't rerun the webhook?)
-# Should point out end and env var in alert
-
-# Do forge-services-pipeline too
-# Do fcs-pipeline too
-
-# --- main ---
-
 heroku_app_id = ENV.fetch("HEROKU_APP_ID")
 heroku_app_name = ENV.fetch("HEROKU_APP_NAME")
 heroku_release_id = ENV.fetch("HEROKU_RELEASE_ID")
 heroku_release_version = ENV.fetch("HEROKU_RELEASE_VERSION")
+for_heroku_pipelines = JSON.parse(ENV.fetch("FOR_HEROKU_PIPELINES"))
 heroku_client = PlatformAPI.connect_oauth(ENV.fetch("HEROKU_API_KEY"))
+
+app_pipeline = heroku_client.pipeline_coupling.info_by_app(heroku_app_id)
+
+if ! for_heroku_pipelines.include?(app_pipeline.dig("pipeline", "name"))
+  puts "App #{heroku_app_name} is not part of included pipelines [#{for_heroku_pipelines.join(",")}]. Skipping check.".green
+  exit 0
+end
 
 release_config_vars=heroku_client.config_var.info_for_app_release(heroku_app_id, heroku_release_id)
 
