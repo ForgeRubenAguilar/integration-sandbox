@@ -91,7 +91,7 @@ jobs:
             {
               attachments: [{
                 color: 'danger',
-                text: `Nonwhitelisted feature flags have been added to Heroku app ${{ github.event.client_payload.heroku_webhook.data.app.name }}. Use Launch Darkly for feature flags. See more details <https://github.com/ForgeRubenAguilar/integration-sandbox/actions/runs/${{ github.run_id }}|here>`,
+                text: `Nonwhitelisted feature flags have been added to Heroku app ${{ github.event.client_payload.heroku_webhook.data.app.name }}. Use Launch Darkly for feature flags. See more details <https://github.com/ForgeRubenAguilar/integration-sandbox/actions/runs/${{ github.run_id }}|here.> <https://media2.giphy.com/media/xT1R9IWTRv6Kn3FvoI/giphy.gif?cid=ecf05e479yoojm89nrxj6noffax6l2gnf3wydhrgy6vaf5l9&rid=giphy.gif&ct=g>`,
               }]
             }
         env:
