@@ -11,7 +11,9 @@ heroku_client = PlatformAPI.connect_oauth(ENV.fetch("HEROKU_API_KEY"))
 
 app_pipeline = heroku_client.pipeline_coupling.info_by_app(heroku_app_id)
 
-if ! for_heroku_pipelines.include?(app_pipeline.dig("pipeline", "name"))
+app_pipeline_name = app_pipeline.dig("pipeline", "name")
+
+if ! for_heroku_pipelines.include?(app_pipeline_name)
   puts "App #{heroku_app_name} is not part of included pipelines [#{for_heroku_pipelines.join(",")}]. Skipping check.".green
   exit 0
 end
@@ -36,12 +38,20 @@ config_vars_without_non_whitelisted_flags = release_config_vars.map { |config_ke
 }.to_h
 
 
-maybe_latest_release=heroku_client.release.info(heroku_app_id, heroku_release_version)
-# A release is generated for each item invoked in procfile, so it can get spammy.
+app_releases = heroku_client.pipeline_release.list(app_pipeline.dig("pipeline", "id"))
+current_release = app_releases.find { |app_release_json| 
+  app_release_json.dig("app", "id") == heroku_app_id
+}
+
+if current_release.nil?
+  puts "App #{heroku_app_name} has no releases found under pipeline #{app_pipeline_name}. Skipping check.".green
+  exit 0
+end
+
 # We only care to guard the latest release, so ensure this is still the latest.
 # Check as close to update as possible so we can avoid spam.
-if maybe_latest_release["current"] != true
-  puts "Release #{heroku_release_version} in app #{heroku_app_name} is not current. Skipping check.".green
+if current_release["version"]&.to_s == heroku_release_version.to_s
+  puts "Release #{heroku_release_version} in app #{heroku_app_name} is not the current release version #{current_release["version"]}. Skipping check.".green
   exit 0 
 end
 
