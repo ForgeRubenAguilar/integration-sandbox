@@ -50,7 +50,7 @@ end
 
 # We only care to guard the latest release, so ensure this is still the latest.
 # Check as close to update as possible so we can avoid spam.
-if current_release["version"]&.to_s == heroku_release_version.to_s
+if current_release["version"]&.to_s != heroku_release_version.to_s
   puts "Release #{heroku_release_version} in app #{heroku_app_name} is not the current release version #{current_release["version"]}. Skipping check.".green
   exit 0 
 end
