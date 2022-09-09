@@ -35,6 +35,7 @@ jobs:
           # If the Heroku app does not originate from one of these pipeline then it will not be enforced.
           FOR_HEROKU_PIPELINES: | 
             [
+              "sharex-pipeline",
               "forge-services-pipeline",
               "fcs-pipeline"
             ]
