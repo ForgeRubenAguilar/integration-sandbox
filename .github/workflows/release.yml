@@ -1,5 +1,5 @@
-# Workflow for https://github.com/forgeglobal/shagorex/github_actions/ensure-new-feature-flags-are-done-in-launch-darkly/
-# Sample taken from: https://github.com/forgeglobal/shagorex/github_actions/ensure-new-feature-flags-are-done-in-launch-darkly/ensure-new-feature-flags-are-done-in-launch-darkly.yml
+# Workflow for https://github.com/forgeglobal/shagorex/tree/development/github_actions/ensure-new-feature-flags-are-done-in-launch-darkly/
+# Sample taken from: https://github.com/forgeglobal/shagorex/tree/development/github_actions/ensure-new-feature-flags-are-done-in-launch-darkly/ensure-new-feature-flags-are-done-in-launch-darkly.yml
 
 name: Remove Heroku Feature Flags 
 
@@ -8,12 +8,10 @@ on:
     types: 
     - heroku-webhook-repository-trigger-release
 
-# Do forge-services-pipeline too
-# Do fcs-pipeline too
 jobs:  
   build:
     runs-on: ubuntu-latest
-    name: Check and rerelease without forbidden Heroku feature flags
+    name: Check and rerelease without disallowed Heroku feature flags
     # Update events come in after the create. This can get spammy for slack notifications, so only respond to release:create.
     if: ${{ github.event.client_payload.heroku_webhook.action == 'create' }}
     steps:
@@ -24,10 +22,10 @@ jobs:
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Perform check and Heroku rerelease
        # Relative to root of github repo.
-        run: BUNDLE_GEMFILE=github_actions/ensure-new-feature-flags-are-done-in-launch-darkly/src/Gemfile bundle exec ruby github_actions/ensure-new-feature-flags-are-done-in-launch-darkly/src/ensure_new_feature_flags_are_done_in_launch_darkly.rb
-
-        env: # The following are example values. Make sure to fill in with what you need.
-          HEROKU_API_KEY: ${{ secrets.NONPROD_HEROKU_API_KEY }}
+        run: bundle exec ruby ensure_new_feature_flags_are_done_in_launch_darkly.rb
+        working-directory: github_actions/ensure-new-feature-flags-are-done-in-launch-darkly/src
+        env: 
+          HEROKU_API_KEY: ${{ secrets.NONPROD_HEROKU_API_KEY_FOR_HEROKU_EVENTS }}
           HEROKU_APP_ID: ${{ github.event.client_payload.heroku_webhook.data.app.id }}
           HEROKU_APP_NAME: ${{ github.event.client_payload.heroku_webhook.data.app.name }}
           HEROKU_RELEASE_ID: ${{ github.event.client_payload.heroku_webhook.data.id }}
@@ -39,7 +37,7 @@ jobs:
               "forge-services-pipeline",
               "fcs-pipeline"
             ]
-          FEATURE_FLAG_WHITELIST: | 
+          FEATURE_FLAG_ALLOW_LIST: | 
             [
               "FEATURE_AGORA",
               "FEATURE_AUTO_ACCREDITATION",
@@ -101,7 +99,7 @@ jobs:
             {
               attachments: [{
                 color: 'danger',
-                text: `<!channel> Nonwhitelisted feature flags have been added to Heroku app ${{ github.event.client_payload.heroku_webhook.data.app.name }}. <https://forgeglobal.atlassian.net/wiki/spaces/ENG/pages/2109276173/Adding+and+Managing+Flags+in+Launch+Darkly|Use Launch Darkly for feature flags.> See more details on the failure <https://github.com/ForgeRubenAguilar/integration-sandbox/actions/runs/${{ github.run_id }}|here.>`,
+                text: `<!channel> Disallowed feature flags have been added to Heroku app ${{ github.event.client_payload.heroku_webhook.data.app.name }}. <https://forgeglobal.atlassian.net/wiki/spaces/ENG/pages/2109276173/Adding+and+Managing+Flags+in+Launch+Darkly|Use Launch Darkly for feature flags.> See more details on the failure <https://github.com/ForgeRubenAguilar/integration-sandbox/actions/runs/${{ github.run_id }}|here.>`,
               }]
             }
         env:

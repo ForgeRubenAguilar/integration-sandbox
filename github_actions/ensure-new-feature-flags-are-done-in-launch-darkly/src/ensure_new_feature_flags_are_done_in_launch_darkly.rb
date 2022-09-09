@@ -20,17 +20,17 @@ end
 
 release_config_vars=heroku_client.config_var.info_for_app_release(heroku_app_id, heroku_release_id)
 
-feature_flag_whitelist = JSON.parse(ENV.fetch("FEATURE_FLAG_WHITELIST"))
+feature_flag_allow_list = JSON.parse(ENV.fetch("FEATURE_FLAG_ALLOW_LIST"))
 
-nonwhitelisted_feature_flags = release_config_vars.keys.select { |config_var| config_var.start_with?("FEATURE_") && !feature_flag_whitelist.include?(config_var) }
+disallowed_feature_flags = release_config_vars.keys.select { |config_var| config_var.start_with?("FEATURE_") && !feature_flag_allow_list.include?(config_var) }
 
-if nonwhitelisted_feature_flags.empty?
-  puts "No feature flags found outside of whitelist for release #{heroku_release_version} in app #{heroku_app_name}. No action taken.".green
+if disallowed_feature_flags.empty?
+  puts "No disallowed feature flags found for release #{heroku_release_version} in app #{heroku_app_name}. No action taken.".green
   exit 0 
 end
 
-config_vars_without_non_whitelisted_flags = release_config_vars.map { |config_key, config_value| 
-  if nonwhitelisted_feature_flags.include?(config_key) 
+config_vars_without_disallowed_flags = release_config_vars.map { |config_key, config_value| 
+  if disallowed_feature_flags.include?(config_key) 
     [config_key, nil] # This removes the config var from the release
   else
     [config_key, config_value]
@@ -55,7 +55,7 @@ if current_release["version"]&.to_s != heroku_release_version.to_s
   exit 0 
 end
 
-heroku_client.config_var.update(heroku_app_id, body = config_vars_without_non_whitelisted_flags)
+heroku_client.config_var.update(heroku_app_id, body = config_vars_without_disallowed_flags)
 
-puts "Use Launch Darkly for feature flags. Found feature flag(s) [#{nonwhitelisted_feature_flags.join(",")}] that are not whitelisted. Pushed release which removes non whitelisted flags.".red
+puts "Use Launch Darkly for feature flags. Found feature flag(s) [#{disallowed_feature_flags.join(",")}] that are disallowed. Pushed release which removes the disallowed flags.".red
 exit 1
