@@ -25,7 +25,7 @@ jobs:
         run: bundle exec ruby ensure_new_feature_flags_are_done_in_launch_darkly.rb
         working-directory: github_actions/ensure-new-feature-flags-are-done-in-launch-darkly/src
         env: 
-          HEROKU_API_KEY: ${{ secrets.NONPROD_HEROKU_API_KEY_FOR_HEROKU_EVENTS }}
+          HEROKU_API_KEY: ${{ secrets.NONPROD_HEROKU_API_KEY }}
           HEROKU_APP_ID: ${{ github.event.client_payload.heroku_webhook.data.app.id }}
           HEROKU_APP_NAME: ${{ github.event.client_payload.heroku_webhook.data.app.name }}
           HEROKU_RELEASE_ID: ${{ github.event.client_payload.heroku_webhook.data.id }}
